@@ -1,14 +1,12 @@
-import { GetServerSideProps, GetStaticPaths, GetStaticProps } from "next";
-import Image from "next/image";
-import { useRouter } from "next/router";
+import { GetServerSideProps, GetStaticProps } from 'next';
+// import { useRouter } from "next/router";
 import Stripe from "stripe";
-import { stripe } from "../../lib/stripe";
-
+import { stripe } from '../../lib/stripe';
 import {
   ImageContainer,
   ProductContainer,
   ProductDetails,
-} from "../../styles/pages/product";
+} from '../../styles/pages/product';
 
 interface ProductProps {
   product: {
@@ -20,44 +18,33 @@ interface ProductProps {
   };
 }
 
-export default function Product({ product }: ProductProps) {
-  const { isFallback } = useRouter();
-
-  if (isFallback) {
-    return <p>Loading...</p>;
-  }
+export default function Product({product }: ProductProps) {
+//   const { query } = useRouter();
 
   return (
     <ProductContainer>
-      <ImageContainer>
-        <Image src={product.imageUrl} width={520} height={480} alt="" />
-      </ImageContainer>
-
+      <ImageContainer></ImageContainer>
       <ProductDetails>
         <h1>{product.name}</h1>
-        <span>{product.price}</span>
-        <p>{product.description}</p>
+        <span>R$ 79,90</span>
 
-        <button>Comprar agora</button>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestiae
+          ipsa iure iusto omnis provident mollitia, corrupti recusandae quidem
+          pariatur asperiores amet impedit corporis voluptate repellendus
+          officia cupiditate reprehenderit suscipit et.
+        </p>
       </ProductDetails>
     </ProductContainer>
   );
 }
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  return {
-    paths: [{ params: { id: "prod_MfnhL6kginqUe4" } }],
-    fallback: "blocking",
-  };
-};
-
-export const getStaticProps: GetStaticProps<any, { id: string }> = async ({
-  params,
-}) => {
+export const getServerSideProps: GetServerSideProps<
+  any, { id: string  }> = async ({ params }) => {
   const productId = params.id;
 
   const product = await stripe.products.retrieve(productId, {
-    expand: ["default_price"],
+    expand: ['default_price'],
   });
 
   const price = product.default_price as Stripe.Price;
@@ -68,13 +55,13 @@ export const getStaticProps: GetStaticProps<any, { id: string }> = async ({
         id: product.id,
         name: product.name,
         imageUrl: product.images[0],
-        price: new Intl.NumberFormat("pt-BR", {
-          style: "currency",
-          currency: "BRL",
+        price: new Intl.NumberFormat('pt-BR', {
+          style: 'currency',
+          currency: 'BRL',
         }).format(price.unit_amount / 100),
         description: product.description,
       },
     },
-    revalidate: 60 * 60 * 1, // 1 hour
+    // revalidate: 60 * 60 * 1, // 1 hour
   };
 };
