@@ -1,4 +1,4 @@
-import { GetServerSideProps, GetStaticProps } from 'next';
+import { GetServerSideProps, GetStaticPaths, GetStaticProps } from 'next';
 // import { useRouter } from "next/router";
 import Stripe from "stripe";
 import { stripe } from '../../lib/stripe';
@@ -26,17 +26,24 @@ export default function Product({product }: ProductProps) {
       <ImageContainer></ImageContainer>
       <ProductDetails>
         <h1>{product.name}</h1>
-        <span>R$ 79,90</span>
+        <span>{product.price}</span>
 
         <p>
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestiae
-          ipsa iure iusto omnis provident mollitia, corrupti recusandae quidem
-          pariatur asperiores amet impedit corporis voluptate repellendus
-          officia cupiditate reprehenderit suscipit et.
+          {product.description}
         </p>
       </ProductDetails>
     </ProductContainer>
   );
+}
+
+export const getStaticPaths: GetStaticPaths = async () => {
+    return {
+        paths: [
+            {
+                params: {id: 'prod_MfnhL6kginqUe4'}
+            }
+        ], fallback: false,
+    }
 }
 
 export const getServerSideProps: GetServerSideProps<
