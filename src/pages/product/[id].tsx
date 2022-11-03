@@ -1,5 +1,5 @@
-import { GetServerSideProps, GetStaticPaths, GetStaticProps } from 'next';
-// import { useRouter } from "next/router";
+import { GetStaticPaths, GetStaticProps } from 'next';
+import Image from 'next/image';
 import Stripe from "stripe";
 import { stripe } from '../../lib/stripe';
 import {
@@ -19,11 +19,13 @@ interface ProductProps {
 }
 
 export default function Product({product }: ProductProps) {
-//   const { query } = useRouter();
 
   return (
     <ProductContainer>
-      <ImageContainer></ImageContainer>
+      <ImageContainer>
+        <Image src={product.imageUrl} width={520} height={480} alt="" />
+        </ImageContainer>
+
       <ProductDetails>
         <h1>{product.name}</h1>
         <span>{product.price}</span>
@@ -31,22 +33,25 @@ export default function Product({product }: ProductProps) {
         <p>
           {product.description}
         </p>
+        <button>
+          Comprar agora
+        </button>
       </ProductDetails>
     </ProductContainer>
   );
 }
 
-export const getStaticPaths: GetStaticPaths = async () => {
-    return {
-        paths: [
-            {
-                params: {id: 'prod_MfnhL6kginqUe4'}
-            }
-        ], fallback: false,
+export const getStaticPaths: GetStaticPaths = async() => {
+  return {
+      paths: [
+        { params: { id: 'prod_MfnhL6kginqUe4'}}
+      ],
+      fallback: false
     }
+  
 }
 
-export const getServerSideProps: GetServerSideProps<
+export const getStaticProps: GetStaticProps<
   any, { id: string  }> = async ({ params }) => {
   const productId = params.id;
 
