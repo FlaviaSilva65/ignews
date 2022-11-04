@@ -1,5 +1,7 @@
+import axios from 'axios';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Image from 'next/image';
+
 import Stripe from "stripe";
 import { stripe } from '../../lib/stripe';
 import {
@@ -15,10 +17,34 @@ interface ProductProps {
     imageUrl: string;
     price: string;
     description: string;
+    defaultPriceId: string;
   };
 }
 
 export default function Product({product }: ProductProps) {
+ 
+  // const { isFallback} = useRouter()
+
+  // if (isFallback) {
+  //   return <p>Loading...</p>
+  // }
+  async function handleBuyProduct() {
+    try {
+
+      const response = await axios.post('/api/checkout', 
+      { product: product.defaultPriceId,
+      })
+
+      const { checkoutUrl } = response.data;
+
+      window.location.href = checkoutUrl;
+
+    } catch (err) {
+      // Conectar com uma ferramenta de observabilidade (Datadog / Sentry)
+
+      alert('Falha ao redirecionar ao checkout!')
+    }
+  }
 
   return (
     <ProductContainer>
@@ -33,7 +59,7 @@ export default function Product({product }: ProductProps) {
         <p>
           {product.description}
         </p>
-        <button>
+        <button onClick={handleBuyProduct}>
           Comprar agora
         </button>
       </ProductDetails>
@@ -46,7 +72,7 @@ export const getStaticPaths: GetStaticPaths = async() => {
       paths: [
         { params: { id: 'prod_MfnhL6kginqUe4'}}
       ],
-      fallback: false
+      fallback: true,
     }
   
 }
@@ -72,8 +98,9 @@ export const getStaticProps: GetStaticProps<
           currency: 'BRL',
         }).format(price.unit_amount / 100),
         description: product.description,
+        defaultPriceId: price.id,
       },
     },
-    // revalidate: 60 * 60 * 1, // 1 hour
+    revalidate: 60 * 60 * 1, // 1 hour
   };
 };
