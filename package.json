@@ -15,7 +15,8 @@
     "next": "12.3.1",
     "react": "17",
     "react-dom": "17",
-    "stripe": "^10.15.0"
+    "stripe": "^10.15.0",
+    "use-shopping-cart": "^3.1.2"
   },
   "devDependencies": {
     "@types/node": "^18.11.0",
